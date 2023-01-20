@@ -54,7 +54,6 @@ const StageCountDown = ({
     const timerId = setInterval(() => (runTimer ? tick() : null), 1000);
     return () => {
       clearInterval(timerId);
-      // setTime({ hours, minutes, seconds });
     };
   });
 
@@ -64,13 +63,8 @@ const StageCountDown = ({
 
   return (
     <div>
-      <div>
-        <span>
-          {time.hours.toString().padStart(2, "0")} -{" "}
-          {time.minutes.toString().padStart(2, "0")} -{" "}
-          {time.seconds.toString().padStart(2, "0")}
-        </span>
-        <p>
+      <div style={{ width: "100%", textAlign: "center" }}>
+        <p style={{ fontSize: 240 }}>
           {hh} : {mm} : {ss}
         </p>
       </div>
