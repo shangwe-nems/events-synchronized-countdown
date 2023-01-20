@@ -11,6 +11,7 @@ import {
   createStyles,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
+import ClockDisplay from "./components/ClockDisplay";
 import EventForm from "./components/EventForm";
 import EventList from "./components/EventList";
 import StageCountDown from "./components/StageCountDown";
@@ -24,7 +25,7 @@ type SingleEventProps = {
   host: string;
 };
 
-const data = {
+const currentData = {
   data: [
     {
       id: "001",
@@ -36,7 +37,7 @@ const data = {
     },
     {
       id: "002",
-      duration: 2,
+      duration: 1,
       symbol: "I",
       name: "Intercession",
       startMessage: "About to start",
@@ -44,7 +45,7 @@ const data = {
     },
     {
       id: "003",
-      duration: 59,
+      duration: 1,
       symbol: "P",
       name: "Prédication",
       startMessage: "About to start",
@@ -52,7 +53,7 @@ const data = {
     },
     {
       id: "004",
-      duration: 15,
+      duration: 1,
       symbol: "Co",
       name: "Communiqués",
       startMessage: "About to start",
@@ -60,7 +61,7 @@ const data = {
     },
     {
       id: "005",
-      duration: 3,
+      duration: 1,
       symbol: "Cl",
       name: "Cloture",
       startMessage: "About to start",
@@ -69,7 +70,7 @@ const data = {
   ],
 };
 
-type StageProps = {
+type StageTypes = {
   id: string;
   duration: number;
   name: string;
@@ -84,34 +85,13 @@ type CountDownProps = {
   seconds: number;
 };
 
-const useStyles = createStyles((theme) => ({
-  item: {
-    ...theme.fn.focusStyles(),
-    display: "flex",
-    alignItems: "center",
-    borderRadius: theme.radius.md,
-    border: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]
-    }`,
-    padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.white,
-    marginBottom: theme.spacing.sm,
-  },
-
-  itemDragging: {
-    boxShadow: theme.shadows.sm,
-  },
-
-  symbol: {
-    fontSize: 30,
-    fontWeight: 700,
-    width: 60,
-  },
-}));
+type DataArrayStage = {
+  data: StageTypes[];
+};
 
 const App: React.FunctionComponent = () => {
-  const [currentStage, setcurrentStage] = useState<StageProps | null>(null);
+  const [data, setdata] = useState<DataArrayStage>(currentData);
+  const [currentStage, setcurrentStage] = useState<StageTypes | null>(null);
   const [createEventVisible, setcreateEventVisible] = useState<boolean>(false);
   const [currentEvent, setcurrentEvent] = useState<SingleEventProps | null>(
     null
@@ -142,6 +122,8 @@ const App: React.FunctionComponent = () => {
   }, []);
 
   const handleNextStage = (): void => {
+    if (currentCount + 1 >= data.data.length) return;
+
     setcurrentCount((e) => e + 1);
     const currentStage = data.data[currentCount + 1];
     setcurrentStage({
@@ -156,6 +138,12 @@ const App: React.FunctionComponent = () => {
       hours: Math.trunc(currentStage?.duration / 60),
       minutes: currentStage?.duration % 60,
       seconds: 0,
+    });
+  };
+
+  const handleReorderStages = (reorderedData: StageTypes[]): void => {
+    setdata({
+      data: [...reorderedData],
     });
   };
 
@@ -185,17 +173,36 @@ const App: React.FunctionComponent = () => {
         <Grid>
           <Grid.Col span={3}>
             <Card>
-              <StagesList {...data} />
+              <StagesList
+                {...data}
+                handleReorder={(data: StageTypes[]) =>
+                  handleReorderStages(data)
+                }
+                currentIndex={currentCount}
+              />
             </Card>
           </Grid.Col>
           <Grid.Col span={9} key={currentStage?.id}>
             <Card>
-              <Text size="xl">{currentStage?.name}</Text>
+              <Text
+                size={80}
+                style={{ width: "100%", textAlign: "center" }}
+                color="blue"
+              >
+                {currentStage?.name}
+              </Text>
               <StageCountDown
                 {...currentCounter}
                 handleNext={() => handleNextStage()}
               />
-              <Text>Upcoming : intercession</Text>
+
+              {currentCount + 1 >= data.data.length ? null : (
+                <Text size={42} style={{ width: "100%", textAlign: "center" }}>
+                  Upcoming : {data?.data[currentCount + 1]?.name}
+                </Text>
+              )}
+
+              <ClockDisplay />
             </Card>
           </Grid.Col>
         </Grid>

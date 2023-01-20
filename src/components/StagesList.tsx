@@ -1,6 +1,6 @@
 import { Button, Divider, Flex, Grid, Text, createStyles } from "@mantine/core";
 import { useListState } from "@mantine/hooks";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 const useStyles = createStyles((theme) => ({
@@ -35,42 +35,65 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-type StageProps = {
-  data: {
-    duration: number;
-    symbol: string;
-    name: string;
-  }[];
+type StageTypes = {
+  id: string;
+  duration: number;
+  name: string;
+  symbol: string;
+  startMessage: string;
+  endMessage: string;
 };
 
-const StagesList = ({ data }: StageProps) => {
+type StageProps = {
+  data: StageTypes[];
+  currentIndex: number;
+  handleReorder: (data: StageTypes[]) => void;
+};
+
+const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
   const { classes, cx } = useStyles();
-  const [state, handlers] = useListState(data);
+  const [state, handlers] = useListState<StageTypes>(data);
 
   // const [displayStageForm, setdisplayStageForm] = useState<boolean>(false);
 
   const items = state.map((item, index) => (
     <Draggable key={item.symbol} index={index} draggableId={item.symbol}>
       {(provided, snapshot) => (
-        <div
-          className={cx(classes.item, {
-            [classes.itemDragging]: snapshot.isDragging,
-          })}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-        >
-          <Text className={classes.symbol}>{item.symbol}</Text>
-          <div>
-            <Text weight={600}>{item.name}</Text>
-            <Text color="dimmed" size="sm">
-              {item.duration} minutes
+        <>
+          <div
+            className={cx(classes.item, {
+              [classes.itemDragging]: snapshot.isDragging,
+            })}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+          >
+            <Text
+              className={classes.symbol}
+              color={currentIndex >= index ? "blue" : "dimmed"}
+            >
+              {item.symbol}
             </Text>
+            <div>
+              <Text
+                weight={600}
+                color={currentIndex >= index ? "blue" : "dimmed"}
+              >
+                {item.name}
+              </Text>
+              <Text color="dimmed" size="sm">
+                {item.duration} minutes
+              </Text>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </Draggable>
   ));
+
+  useEffect(() => {
+    handleReorder(state);
+  }, [state]);
 
   return (
     <Grid>
