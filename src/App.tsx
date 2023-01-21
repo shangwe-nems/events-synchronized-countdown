@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Button,
   Card,
   Container,
@@ -11,26 +12,25 @@ import {
   createStyles,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
+import {
+  BsCalendar,
+  BsCalendar2EventFill,
+  BsCalendar2PlusFill,
+  BsGearFill,
+} from "react-icons/bs";
+import background from "./assets/img/background2.png";
 import ClockDisplay from "./components/ClockDisplay";
 import EventForm from "./components/EventForm";
 import EventList from "./components/EventList";
 import StageCountDown from "./components/StageCountDown";
 import StagesList from "./components/StagesList";
-
-type SingleEventProps = {
-  eventName: string;
-  location: string;
-  startTime: Date;
-  endTime: Date;
-  host: string;
-};
+import { CountDownTypes, EventTypes, StageTypes } from "./types";
 
 const currentData = {
   data: [
     {
       id: "001",
       duration: 1,
-      symbol: "LA",
       name: "Louange et adoration",
       startMessage: "About to start",
       endMessage: "Process is ending",
@@ -38,15 +38,13 @@ const currentData = {
     {
       id: "002",
       duration: 1,
-      symbol: "I",
       name: "Intercession",
       startMessage: "About to start",
       endMessage: "Process is ending",
     },
     {
       id: "003",
-      duration: 1,
-      symbol: "P",
+      duration: 2,
       name: "Prédication",
       startMessage: "About to start",
       endMessage: "Process is ending",
@@ -54,7 +52,6 @@ const currentData = {
     {
       id: "004",
       duration: 1,
-      symbol: "Co",
       name: "Communiqués",
       startMessage: "About to start",
       endMessage: "Process is ending",
@@ -62,27 +59,11 @@ const currentData = {
     {
       id: "005",
       duration: 1,
-      symbol: "Cl",
       name: "Cloture",
       startMessage: "About to start",
       endMessage: "Process is ending",
     },
   ],
-};
-
-type StageTypes = {
-  id: string;
-  duration: number;
-  name: string;
-  symbol: string;
-  startMessage: string;
-  endMessage: string;
-};
-
-type CountDownProps = {
-  hours: number;
-  minutes: number;
-  seconds: number;
 };
 
 type DataArrayStage = {
@@ -91,18 +72,18 @@ type DataArrayStage = {
 
 const App: React.FunctionComponent = () => {
   const [data, setdata] = useState<DataArrayStage>(currentData);
+  const [events, setEvents] = useState<EventTypes[]>([]);
   const [currentStage, setcurrentStage] = useState<StageTypes | null>(null);
   const [createEventVisible, setcreateEventVisible] = useState<boolean>(false);
-  const [currentEvent, setcurrentEvent] = useState<SingleEventProps | null>(
-    null
-  );
+  const [currentEvent, setcurrentEvent] = useState<EventTypes | null>(null);
 
   const [currentCount, setcurrentCount] = useState<number>(0);
-  const [currentCounter, setcurrentCounter] = useState<CountDownProps>({
+  const [currentCounter, setcurrentCounter] = useState<CountDownTypes>({
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
+  const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   useEffect(() => {
     const currentStage = data.data[currentCount];
@@ -129,7 +110,6 @@ const App: React.FunctionComponent = () => {
     setcurrentStage({
       duration: currentStage.duration,
       id: currentStage.id,
-      symbol: currentStage.symbol,
       name: currentStage.name,
       startMessage: "Starting the event",
       endMessage: "The event has ended",
@@ -147,67 +127,110 @@ const App: React.FunctionComponent = () => {
     });
   };
 
+  const handleAddStage = (newStage: StageTypes): void => {
+    const newState = { data: [...data.data, newStage] };
+    setdata(newState);
+  };
+
+  const handleSaveEvent = () => {};
+
   return (
-    <Grid>
-      <Grid.Col span={12} style={{ height: "25vh" }}>
-        <Flex
-          direction="row"
-          justify="center"
-          align="center"
-          p={10}
+    <div
+      style={
+        currentCount + 1 >= data.data.length
+          ? {
+              backgroundImage: `url(${background})`,
+              backgroundSize: "100%",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }
+          : {}
+      }
+    >
+      <Grid>
+        <Grid.Col
+          span={12}
           style={{
-            borderBlock: "1px dashed #a6a6a6",
+            display: "inline-flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingInline: 38,
+            paddingBlock: 24,
           }}
         >
-          <Divider />
-          <Text size="md" weight={600}>
-            Eglise Arche de l'Alliance Goma
-          </Text>
-          <Divider />
-        </Flex>
+          {currentCount + 1 >= data.data.length ? (
+            <div className="gear-btn" onClick={() => setdisplayEventForm(true)}>
+              <BsCalendar2PlusFill size={28} />
+            </div>
+          ) : (
+            <div className="gear-btn">
+              <BsGearFill size={28} />
+            </div>
+          )}
+        </Grid.Col>
 
-        <EventList />
-      </Grid.Col>
-
-      <Grid.Col span={12} style={{ height: "75vh", paddingInline: 124 }}>
-        <Grid>
-          <Grid.Col span={3}>
-            <Card>
-              <StagesList
-                {...data}
-                handleReorder={(data: StageTypes[]) =>
-                  handleReorderStages(data)
-                }
-                currentIndex={currentCount}
-              />
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={9} key={currentStage?.id}>
-            <Card>
+        <Grid.Col span={12} key={currentStage?.id} style={{ height: "70vh" }}>
+          {currentCount + 1 >= data.data.length ? null : (
+            <div className="upper-heading">
               <Text
-                size={80}
                 style={{ width: "100%", textAlign: "center" }}
-                color="blue"
+                tt="uppercase"
               >
                 {currentStage?.name}
               </Text>
-              <StageCountDown
-                {...currentCounter}
-                handleNext={() => handleNextStage()}
-              />
+            </div>
+          )}
+          {currentCount + 1 >= data.data.length ? (
+            <ClockDisplay />
+          ) : (
+            <StageCountDown
+              {...currentCounter}
+              handleNext={() => handleNextStage()}
+            />
+          )}
 
-              {currentCount + 1 >= data.data.length ? null : (
-                <Text size={42} style={{ width: "100%", textAlign: "center" }}>
-                  Upcoming : {data?.data[currentCount + 1]?.name}
-                </Text>
-              )}
-
-              <ClockDisplay />
-            </Card>
-          </Grid.Col>
-        </Grid>
-      </Grid.Col>
-    </Grid>
+          {currentCount + 1 >= data.data.length ? null : (
+            <div className="lower-heading">
+              <Text style={{ width: "100%", textAlign: "center" }}>
+                Prochaine étape : {data?.data[currentCount + 1]?.name}
+              </Text>
+            </div>
+          )}
+        </Grid.Col>
+        <Grid.Col span={12} style={{ height: "18vh" }}>
+          <EventList allEvents={events} />
+        </Grid.Col>
+        {/* <Grid.Col span={12} key={data.data.length}>
+        <StagesList
+          {...data}
+          handleReorder={(data: StageTypes[]) => handleReorderStages(data)}
+          currentIndex={currentCount}
+          handleAdd={(data: StageTypes) => handleAddStage(data)}
+        />
+      </Grid.Col> */}
+        <Modal
+          opened={displayEventForm}
+          onClose={() => setdisplayEventForm(false)}
+          title={
+            <Text color="blue" size="lg" weight={600}>
+              <BsCalendar2PlusFill
+                size={24}
+                style={{ marginBottom: -4, marginRight: 8 }}
+              />{" "}
+              Add new event
+            </Text>
+          }
+        >
+          <EventForm
+            handleCreate={(createdEvent: EventTypes) => {
+              setdisplayEventForm(false);
+              setEvents([...events, createdEvent]);
+            }}
+            status="create"
+          />
+        </Modal>
+      </Grid>
+    </div>
   );
 };
 

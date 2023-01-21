@@ -1,26 +1,9 @@
-import { Container, Flex, Modal } from "@mantine/core";
+import { Container, Flex, Modal, Text } from "@mantine/core";
 import React, { useState } from "react";
+import { BsCalendar2PlusFill } from "react-icons/bs";
+import { EventTypes } from "../types";
 import EventForm from "./EventForm";
 import SingleEvent from "./SingleEvent";
-
-type StageProps = {
-  duration: number;
-  title: string;
-  startMessage: string;
-  endMessage: string;
-};
-
-type EventProps = {
-  _id: string;
-  title: React.ReactNode;
-  image: string;
-  start_time: Date;
-  end_time: Date;
-  stages: StageProps[];
-  action: {
-    label: string;
-  };
-};
 
 const data = [
   {
@@ -73,18 +56,38 @@ const data = [
   },
 ];
 
-const EventList = () => {
-  const [events, setEvents] = useState<EventProps[]>(data);
+type ListProps = {
+  allEvents: EventTypes[];
+};
+
+const EventList = ({ allEvents }: ListProps) => {
+  // const [events, setEvents] = useState<EventTypes[]>(allEvents);
+  // const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   return (
     <>
-      <Flex direction="row" align="center" wrap="wrap" justify="center">
-        {events.map((event) => (
-          <div key={event._id}>
+      <Flex direction="row" align="center" wrap="wrap" justify="space-evenly">
+        {allEvents.map((event) => (
+          <div key={event.id}>
             <SingleEvent {...event} />
           </div>
         ))}
       </Flex>
+      {/* <Modal
+        opened={displayEventForm}
+        onClose={() => setdisplayEventForm(false)}
+        title={
+          <Text color="blue" size="lg" weight={600}>
+            <BsCalendar2PlusFill
+              size={24}
+              style={{ marginBottom: -4, marginRight: 8 }}
+            />{" "}
+            Add new event
+          </Text>
+        }
+      >
+        <EventForm />
+      </Modal> */}
     </>
   );
 };

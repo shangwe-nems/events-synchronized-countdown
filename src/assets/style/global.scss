@@ -1,101 +1,164 @@
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i");
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-  margin: 0;
+:root {
+  /*========== Colors ==========*/
+  --hue-color: 240;
+
+  --first-color: hsl(var(--hue-color), 53%, 49%);
+  --title-color: hsl(var(--hue-color), 53%, 15%);
+  --text-color: hsl(var(--hue-color), 12%, 35%);
+  --text-color-light: hsl(var(--hue-color), 12%, 65%);
+  --white-color: #fff;
+  // --body-color: hsl(var(--hue-color), 24%, 94%);
+  --body-color: #e7e4e4;
+
+  /*========== Font and typography ==========*/
+  --body-font: "Poppins", sans-serif;
+  --biggest-font-size: 3rem;
+  --small-font-size: 0.813rem;
+  --smaller-font-size: 0.75rem;
+  --tiny-font-size: 0.625rem;
+
+  /*========== Font weight ==========*/
+  --font-medium: 500;
+
+  /*========== Margenes Bottom ==========*/
+  --mb-0-25: 0.25rem;
+  --mb-1: 1rem;
+  --mb-1-5: 1.5rem;
+  --mb-2-5: 2.5rem;
+
+  /*========== z index ==========*/
+  --z-normal: 1;
+  --z-tooltip: 10;
+}
+
+// @media screen and (min-width: 968px) {
+//   :root {
+//     --biggest-font-size: 3.5rem;
+//     --small-font-size: 0.875rem;
+//     --smaller-font-size: 0.813rem;
+//     --tiny-font-size: 0.75rem;
+//   }
+// }
+
+// /*=============== BASE ===============*/
+* {
+  box-sizing: border-box;
   padding: 0;
-  border: 0;
-  font-size: 100%;
-  font-family: "Source Sans Pro", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  // font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
-  //   Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
-  vertical-align: middle;
 }
 
 body {
-  line-height: 1;
-  overflow-x: hidden;
-  font-weight: 400;
-  background-color: rgba(30, 144, 255, 0.04);
+  font-family: var(--body-font);
+  background-color: var(--body-color);
+  color: var(--text-color);
+  transition: 0.4s;
+}
+
+a {
+  text-decoration: none;
+}
+
+/*=============== REUSABLE CSS CLASSES ===============*/
+.container {
+  max-width: 968px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+// .grid {
+//   display: grid;
+// }
+
+/*=============== CLOCK ===============*/
+.clock__container {
+  height: 100vh;
+  grid-template-rows: 1fr max-content;
+}
+
+/*=============== MEDIA QUERIES ===============*/
+/* For large devices */
+@media screen and (min-width: 968px) {
+  .container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.clock-main-container {
+  // background-color: aquamarine;
+  margin-top: 18vh;
+  height: 42vh;
+  display: grid;
+  place-content: center;
+
+  .clock-sub-container {
+    padding: 0px 6vw;
+    border-radius: 50px;
+    font-size: 14.8vw;
+    font-weight: var(--font-medium);
+    background: linear-gradient(315deg, #f7f4f4, #d0cdcd);
+    box-shadow: -20px -20px 60px #c4c2c2, 20px 20px 60px #ffffff;
+    color: var(--title-color);
+  }
+}
+
+.clock__text {
+  display: flex;
+  justify-content: center;
+}
+
+.clock__text-hour,
+.clock__text-minutes {
+  font-size: 14vw;
+  font-weight: var(--font-medium);
+  color: var(--title-color);
+  margin-bottom: -10vh;
+  margin-top: -8vh;
+}
+
+.clock__text-ampm {
+  font-size: 4vw;
+  color: var(--title-color);
+  font-weight: var(--font-medium);
+  margin-left: var(--mb-0-25);
+}
+
+.clock__date {
+  text-align: center;
+  font-size: 4vw;
+  font-weight: var(--font-medium);
+}
+
+.upper-heading {
+  font-size: 4.6vw;
+  margin-top: -8vh;
+  margin-bottom: -14vh;
+}
+
+.lower-heading {
+  font-size: 2.8vw;
+  margin-top: 4vh;
+}
+
+.gear-btn {
+  width: 60px;
+  height: 60px;
+  padding: 8px;
+  border: 1px solid #d0cdcd;
+  display: grid;
+  place-content: center;
+  border-radius: 14px;
+  background: linear-gradient(225deg, #f7f4f4, #d0cdcd);
+  box-shadow: -20px 20px 60px #c4c2c2, 20px -20px 60px #ffffff;
+  position: relative;
+  z-index: 99;
+
+  &:hover {
+    background: #e7e4e4;
+    box-shadow: inset -20px 20px 60px #c4c2c2, inset 20px -20px 60px #ffffff;
+    cursor: pointer;
+  }
 }

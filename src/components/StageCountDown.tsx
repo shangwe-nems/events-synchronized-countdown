@@ -62,11 +62,9 @@ const StageCountDown = ({
   const ss = time.seconds.toString().padStart(2, "0");
 
   return (
-    <div>
-      <div style={{ width: "100%", textAlign: "center" }}>
-        <p style={{ fontSize: 240 }}>
-          {hh} : {mm} : {ss}
-        </p>
+    <div className="clock-main-container">
+      <div className="clock-sub-container">
+        {hh}:{mm}:{ss}
       </div>
     </div>
   );

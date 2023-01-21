@@ -1,7 +1,22 @@
-import { Button, Divider, Flex, Grid, Text, createStyles } from "@mantine/core";
+import {
+  Button,
+  Divider,
+  Flex,
+  Grid,
+  Modal,
+  Text,
+  createStyles,
+} from "@mantine/core";
 import { useListState } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  BsCalendar2Date,
+  BsCalendar2Event,
+  BsCheck2Circle,
+} from "react-icons/bs";
+import { StageTypes } from "../types";
+import StageForm from "./StageForm";
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -12,52 +27,44 @@ const useStyles = createStyles((theme) => ({
     border: `1px solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]
     }`,
-    padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
+    padding: `${theme.spacing.xs}px ${theme.spacing.xs}px`,
     backgroundColor:
       theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.white,
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.xs,
   },
 
   itemDragging: {
     boxShadow: theme.shadows.sm,
   },
 
-  active: {
-    backgroundColor: theme.colors.blue[7],
-    color: theme.colors.yellow[3],
-  },
-
   symbol: {
     fontSize: 30,
     fontWeight: 400,
-    width: 60,
+    width: 52,
     textAlign: "left",
   },
 }));
-
-type StageTypes = {
-  id: string;
-  duration: number;
-  name: string;
-  symbol: string;
-  startMessage: string;
-  endMessage: string;
-};
 
 type StageProps = {
   data: StageTypes[];
   currentIndex: number;
   handleReorder: (data: StageTypes[]) => void;
+  handleAdd: (data: StageTypes) => void;
 };
 
-const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
+const StagesList = ({
+  data,
+  currentIndex,
+  handleReorder,
+  handleAdd,
+}: StageProps) => {
   const { classes, cx } = useStyles();
   const [state, handlers] = useListState<StageTypes>(data);
 
-  // const [displayStageForm, setdisplayStageForm] = useState<boolean>(false);
+  const [displayStageForm, setdisplayStageForm] = useState<boolean>(false);
 
   const items = state.map((item, index) => (
-    <Draggable key={item.symbol} index={index} draggableId={item.symbol}>
+    <Draggable key={item.id} index={index} draggableId={item.id}>
       {(provided, snapshot) => (
         <>
           <div
@@ -68,20 +75,26 @@ const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
             {...provided.dragHandleProps}
             ref={provided.innerRef}
           >
-            <Text
-              className={classes.symbol}
-              color={currentIndex >= index ? "blue" : "dimmed"}
-            >
-              {item.symbol}
-            </Text>
+            {currentIndex >= index ? (
+              <BsCheck2Circle
+                className={classes.symbol}
+                color={currentIndex >= index ? "dodgerblue" : "#a6a6a6"}
+              />
+            ) : (
+              <BsCalendar2Date
+                className={classes.symbol}
+                color={currentIndex >= index ? "dodger" : "#a6a6a6"}
+              />
+            )}
             <div>
               <Text
                 weight={600}
+                size="sm"
                 color={currentIndex >= index ? "blue" : "dimmed"}
               >
                 {item.name}
               </Text>
-              <Text color="dimmed" size="sm">
+              <Text color="dimmed" size="xs">
                 {item.duration} minutes
               </Text>
             </div>
@@ -100,7 +113,9 @@ const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
       <Grid.Col span={12}>
         <Flex direction="row" justify="space-between" align="center">
           <Text size="sm">Stages of the event</Text>
-          <Button size="xs">New Stage</Button>
+          <Button size="xs" onClick={() => setdisplayStageForm(true)}>
+            New Stage
+          </Button>
         </Flex>
       </Grid.Col>
       <Grid.Col span={12}>
@@ -122,6 +137,26 @@ const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
           </Droppable>
         </DragDropContext>
       </Grid.Col>
+      <Modal
+        opened={displayStageForm}
+        onClose={() => setdisplayStageForm(false)}
+        title={
+          <Text color="blue" size="md" weight={600}>
+            <BsCalendar2Event
+              size={24}
+              style={{ marginBottom: -4, marginRight: 8 }}
+            />{" "}
+            Create a step for the current event
+          </Text>
+        }
+      >
+        <StageForm
+          handleClose={(data: StageTypes) => {
+            handleAdd(data);
+            setdisplayStageForm(false);
+          }}
+        />
+      </Modal>
     </Grid>
   );
 };
