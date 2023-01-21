@@ -8,38 +8,24 @@ import {
   createStyles,
 } from "@mantine/core";
 import React, { useState } from "react";
+import { BsCalendar } from "react-icons/bs";
+import { EventTypes } from "../types";
 import EventForm from "./EventForm";
-
-type StageProps = {
-  duration: number;
-  title: string;
-  startMessage: string;
-  endMessage: string;
-};
-
-type EventProps = {
-  title: React.ReactNode;
-  image: string;
-  start_time: Date;
-  end_time: Date;
-  stages: StageProps[];
-  action: {
-    label: string;
-  };
-};
 
 const useStyles = createStyles((theme) => ({
   card: {
-    height: 150,
-    width: 400,
+    height: 140,
+    width: 420,
     margin: 14,
     backgroundSize: "cover",
     backgroundPosition: "center",
+    // background: "linear-gradient(225deg, #d0cdcd, #f7f4f4)",
+    boxShadow: "-20px 20px 60px #c4c2c2, 20px -20px 60px #ffffff",
   },
 
   content: {
     position: "absolute",
-    padding: theme.spacing.xl,
+    padding: "18px 24px",
     zIndex: 1,
     top: 0,
     bottom: 0,
@@ -64,13 +50,13 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const SingleEvent = ({ ...eventData }: EventProps) => {
+const SingleEvent = ({ ...eventData }: EventTypes) => {
   const { classes, cx, theme } = useStyles();
   const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   return (
     <Card
-      radius="md"
+      radius="lg"
       style={{ backgroundImage: `url(${eventData.image})` }}
       className={cx(classes.card)}
     >
@@ -89,12 +75,11 @@ const SingleEvent = ({ ...eventData }: EventProps) => {
           {eventData.stages.length} stages for the current event.
         </Text>
         <Text size="xs" className={classes.description} mt={14}>
-          Debut du culte :{" "}
+          Debut :{" "}
           <strong>{new Date(eventData.start_time).toLocaleString()}</strong>
         </Text>
         <Text size="xs" className={classes.description}>
-          Fin du culte :{" "}
-          <b>{new Date(eventData.start_time).toLocaleString()}</b>
+          Cloture : <b>{new Date(eventData.end_time).toLocaleString()}</b>
         </Text>
 
         <Button
@@ -111,9 +96,24 @@ const SingleEvent = ({ ...eventData }: EventProps) => {
       <Modal
         opened={displayEventForm}
         onClose={() => setdisplayEventForm(false)}
-        title="New Event"
+        title={
+          <Text color="blue" size="md" weight={600}>
+            <BsCalendar
+              size={24}
+              style={{ marginBottom: -4, marginRight: 8 }}
+            />{" "}
+            Configure the current event.
+          </Text>
+        }
       >
-        <EventForm />
+        <EventForm
+          status="update"
+          handleCreate={(createdEvent: EventTypes) => {
+            setdisplayEventForm(false);
+            // Here we should query and update by ID
+            // setEvents([...events, createdEvent]);
+          }}
+        />
       </Modal>
     </Card>
   );
