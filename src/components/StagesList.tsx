@@ -112,8 +112,10 @@ const StagesList = ({
     <Grid>
       <Grid.Col span={12}>
         <Flex direction="row" justify="space-between" align="center">
-          <Text size="sm">Stages of the event</Text>
-          <Button size="xs" onClick={() => setdisplayStageForm(true)}>
+          <Text size="sm" weight={600}>
+            Stages of the event
+          </Text>
+          <Button size="xs" compact onClick={() => setdisplayStageForm(true)}>
             New Stage
           </Button>
         </Flex>

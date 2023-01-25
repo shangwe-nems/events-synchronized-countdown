@@ -58,18 +58,27 @@ const data = [
 
 type ListProps = {
   allEvents: EventTypes[];
+  handlePlay: (currentEvent: EventTypes) => void;
 };
 
-const EventList = ({ allEvents }: ListProps) => {
+const EventList = ({ allEvents, handlePlay }: ListProps) => {
   // const [events, setEvents] = useState<EventTypes[]>(allEvents);
   // const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
+  const handleSelectEvent = (event: EventTypes) => {
+    console.log("Selected:", event);
+  };
 
   return (
     <>
       <Flex direction="row" align="center" wrap="wrap" justify="space-evenly">
         {allEvents.map((event) => (
           <div key={event.id}>
-            <SingleEvent {...event} />
+            <SingleEvent
+              {...event}
+              handleSelect={() => {
+                handleSelectEvent(event);
+              }}
+            />
           </div>
         ))}
       </Flex>
