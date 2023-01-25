@@ -1,15 +1,25 @@
 import {
+  ActionIcon,
   Button,
   Card,
   CardProps,
+  Drawer,
   Modal,
   Overlay,
   Text,
   createStyles,
+  useMantineTheme,
 } from "@mantine/core";
 import React, { useState } from "react";
-import { BsCalendar } from "react-icons/bs";
+import {
+  BsCalendar,
+  BsGear,
+  BsPlay,
+  BsPlayBtn,
+  BsSkipStart,
+} from "react-icons/bs";
 import { EventTypes } from "../types";
+import ConfigureEventDisplay from "./ConfigureEventDisplay";
 import EventForm from "./EventForm";
 
 const useStyles = createStyles((theme) => ({
@@ -37,6 +47,7 @@ const useStyles = createStyles((theme) => ({
     position: "absolute",
     bottom: theme.spacing.xl,
     right: theme.spacing.xl,
+    display: "inline-flex",
   },
 
   title: {
@@ -50,8 +61,13 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const SingleEvent = ({ ...eventData }: EventTypes) => {
+type SingleEventProps = EventTypes & {
+  handleSelect: () => void;
+};
+
+const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
   const { classes, cx, theme } = useStyles();
+  const drawerTheme = useMantineTheme();
   const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   return (
@@ -82,39 +98,55 @@ const SingleEvent = ({ ...eventData }: EventTypes) => {
           Cloture : <b>{new Date(eventData.end_time).toLocaleString()}</b>
         </Text>
 
-        <Button
-          className={classes.action}
-          variant="white"
-          color="dark"
-          component="a"
-          size="xs"
-          onClick={() => setdisplayEventForm(true)}
-        >
-          {eventData.action.label}
-        </Button>
+        <div className={classes.action}>
+          <ActionIcon
+            variant="light"
+            color="dark"
+            style={{ marginRight: 8, backgroundColor: "white" }}
+            onClick={() => handleSelect()}
+          >
+            <BsPlay />
+          </ActionIcon>
+          <ActionIcon
+            variant="light"
+            color="dark"
+            style={{ backgroundColor: "white" }}
+            onClick={() => setdisplayEventForm(true)}
+          >
+            <BsGear />
+          </ActionIcon>
+        </div>
       </div>
-      <Modal
+      <Drawer
+        overlayColor={
+          drawerTheme.colorScheme === "dark"
+            ? drawerTheme.colors.dark[9]
+            : drawerTheme.colors.gray[2]
+        }
+        overlayOpacity={0.55}
+        overlayBlur={3}
+        position="left"
+        size="lg"
+        padding="sm"
         opened={displayEventForm}
         onClose={() => setdisplayEventForm(false)}
         title={
-          <Text color="blue" size="md" weight={600}>
+          <Text color="blue" size="sm" weight={600}>
             <BsCalendar
-              size={24}
-              style={{ marginBottom: -4, marginRight: 8 }}
+              size={18}
+              style={{ marginBottom: -2, marginRight: 8 }}
             />{" "}
             Configure the current event.
           </Text>
         }
       >
-        <EventForm
-          status="update"
-          handleCreate={(createdEvent: EventTypes) => {
+        <ConfigureEventDisplay
+          {...eventData}
+          handleClose={() => {
             setdisplayEventForm(false);
-            // Here we should query and update by ID
-            // setEvents([...events, createdEvent]);
           }}
         />
-      </Modal>
+      </Drawer>
     </Card>
   );
 };

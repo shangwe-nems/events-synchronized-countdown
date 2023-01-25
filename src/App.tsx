@@ -23,59 +23,20 @@ import ClockDisplay from "./components/ClockDisplay";
 import EventForm from "./components/EventForm";
 import EventList from "./components/EventList";
 import StageCountDown from "./components/StageCountDown";
+import StageSwitcher from "./components/StageSwitcher";
 import StagesList from "./components/StagesList";
 import { CountDownTypes, EventTypes, StageTypes } from "./types";
-
-const currentData = {
-  data: [
-    {
-      id: "001",
-      duration: 1,
-      name: "Louange et adoration",
-      startMessage: "About to start",
-      endMessage: "Process is ending",
-    },
-    {
-      id: "002",
-      duration: 1,
-      name: "Intercession",
-      startMessage: "About to start",
-      endMessage: "Process is ending",
-    },
-    {
-      id: "003",
-      duration: 2,
-      name: "Prédication",
-      startMessage: "About to start",
-      endMessage: "Process is ending",
-    },
-    {
-      id: "004",
-      duration: 1,
-      name: "Communiqués",
-      startMessage: "About to start",
-      endMessage: "Process is ending",
-    },
-    {
-      id: "005",
-      duration: 1,
-      name: "Cloture",
-      startMessage: "About to start",
-      endMessage: "Process is ending",
-    },
-  ],
-};
 
 type DataArrayStage = {
   data: StageTypes[];
 };
 
 const App: React.FunctionComponent = () => {
-  const [data, setdata] = useState<DataArrayStage>(currentData);
+  const [data, setdata] = useState<DataArrayStage>({ data: [] });
   const [events, setEvents] = useState<EventTypes[]>([]);
+  const [selectedEvent, setselectedEvent] = useState<EventTypes | null>(null);
   const [currentStage, setcurrentStage] = useState<StageTypes | null>(null);
-  const [createEventVisible, setcreateEventVisible] = useState<boolean>(false);
-  const [currentEvent, setcurrentEvent] = useState<EventTypes | null>(null);
+  const [switching, setswitching] = useState(true);
 
   const [currentCount, setcurrentCount] = useState<number>(0);
   const [currentCounter, setcurrentCounter] = useState<CountDownTypes>({
@@ -134,7 +95,14 @@ const App: React.FunctionComponent = () => {
 
   const handleSaveEvent = () => {};
 
-  return (
+  return switching ? (
+    <StageSwitcher
+      handleStart={() => {
+        setswitching(false);
+        handleNextStage();
+      }}
+    />
+  ) : (
     <div
       style={
         currentCount + 1 >= data.data.length
@@ -198,7 +166,12 @@ const App: React.FunctionComponent = () => {
           )}
         </Grid.Col>
         <Grid.Col span={12} style={{ height: "18vh" }}>
-          <EventList allEvents={events} />
+          <EventList
+            allEvents={events}
+            handlePlay={(currentEvent: EventTypes) => {
+              setselectedEvent(currentEvent);
+            }}
+          />
         </Grid.Col>
         {/* <Grid.Col span={12} key={data.data.length}>
         <StagesList
@@ -210,12 +183,13 @@ const App: React.FunctionComponent = () => {
       </Grid.Col> */}
         <Modal
           opened={displayEventForm}
+          padding={"sm"}
           onClose={() => setdisplayEventForm(false)}
           title={
-            <Text color="blue" size="lg" weight={600}>
+            <Text color="blue" size="md" weight={600}>
               <BsCalendar2PlusFill
-                size={24}
-                style={{ marginBottom: -4, marginRight: 8 }}
+                size={18}
+                style={{ marginBottom: -2, marginRight: 8 }}
               />{" "}
               Add new event
             </Text>
@@ -227,6 +201,17 @@ const App: React.FunctionComponent = () => {
               setEvents([...events, createdEvent]);
             }}
             status="create"
+            currentEventData={{
+              id: "",
+              title: undefined,
+              image: "",
+              start_time: "",
+              end_time: "",
+              stages: [],
+              action: {
+                label: "",
+              },
+            }}
           />
         </Modal>
       </Grid>
