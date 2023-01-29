@@ -148,7 +148,7 @@ const StagesList = ({
               size={24}
               style={{ marginBottom: -4, marginRight: 8 }}
             />{" "}
-            Create a step for the current event
+            Create a stage for the current event
           </Text>
         }
       >
