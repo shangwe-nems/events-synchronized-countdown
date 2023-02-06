@@ -14,6 +14,7 @@ import React, { useState } from "react";
 import {
   BsCalendar,
   BsGear,
+  BsGearFill,
   BsPlay,
   BsPlayBtn,
   BsSkipStart,
@@ -63,12 +64,17 @@ const useStyles = createStyles((theme) => ({
 
 type SingleEventProps = EventTypes & {
   handleSelect: () => void;
+  handlePlay: () => void;
 };
 
-const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
+const SingleEvent = ({
+  handleSelect,
+  handlePlay,
+  ...eventData
+}: SingleEventProps) => {
   const { classes, cx, theme } = useStyles();
-  const drawerTheme = useMantineTheme();
-  const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
+  // const drawerTheme = useMantineTheme();
+  // const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   return (
     <Card
@@ -103,7 +109,7 @@ const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
             variant="light"
             color="dark"
             style={{ marginRight: 8, backgroundColor: "white" }}
-            onClick={() => handleSelect()}
+            onClick={() => handlePlay()}
           >
             <BsPlay />
           </ActionIcon>
@@ -111,13 +117,13 @@ const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
             variant="light"
             color="dark"
             style={{ backgroundColor: "white" }}
-            onClick={() => setdisplayEventForm(true)}
+            onClick={() => handleSelect()}
           >
             <BsGear />
           </ActionIcon>
         </div>
       </div>
-      <Drawer
+      {/* <Drawer
         overlayColor={
           drawerTheme.colorScheme === "dark"
             ? drawerTheme.colors.dark[9]
@@ -132,7 +138,7 @@ const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
         onClose={() => setdisplayEventForm(false)}
         title={
           <Text color="blue" size="sm" weight={600}>
-            <BsCalendar
+            <BsGearFill
               size={18}
               style={{ marginBottom: -2, marginRight: 8 }}
             />{" "}
@@ -142,11 +148,12 @@ const SingleEvent = ({ handleSelect, ...eventData }: SingleEventProps) => {
       >
         <ConfigureEventDisplay
           {...eventData}
-          handleClose={() => {
+          handleConfig={(data: EventTypes) => {
             setdisplayEventForm(false);
+            console.log("From single Event: ", data);
           }}
         />
-      </Drawer>
+      </Drawer> */}
     </Card>
   );
 };

@@ -59,13 +59,20 @@ const data = [
 type ListProps = {
   allEvents: EventTypes[];
   handlePlay: (currentEvent: EventTypes) => void;
+  handleSelect: (currentEvent: EventTypes) => void;
 };
 
-const EventList = ({ allEvents, handlePlay }: ListProps) => {
+const EventList = ({ allEvents, handlePlay, handleSelect }: ListProps) => {
   // const [events, setEvents] = useState<EventTypes[]>(allEvents);
   // const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
   const handleSelectEvent = (event: EventTypes) => {
     console.log("Selected:", event);
+    handleSelect(event);
+  };
+
+  const handlePlayEvent = (event: EventTypes) => {
+    console.log("Played:", event);
+    handlePlay(event);
   };
 
   return (
@@ -77,6 +84,9 @@ const EventList = ({ allEvents, handlePlay }: ListProps) => {
               {...event}
               handleSelect={() => {
                 handleSelectEvent(event);
+              }}
+              handlePlay={() => {
+                handlePlayEvent(event);
               }}
             />
           </div>
