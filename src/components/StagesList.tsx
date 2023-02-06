@@ -49,19 +49,11 @@ type StageProps = {
   data: StageTypes[];
   currentIndex: number;
   handleReorder: (data: StageTypes[]) => void;
-  handleAdd: (data: StageTypes) => void;
 };
 
-const StagesList = ({
-  data,
-  currentIndex,
-  handleReorder,
-  handleAdd,
-}: StageProps) => {
+const StagesList = ({ data, currentIndex, handleReorder }: StageProps) => {
   const { classes, cx } = useStyles();
   const [state, handlers] = useListState<StageTypes>(data);
-
-  const [displayStageForm, setdisplayStageForm] = useState<boolean>(false);
 
   const items = state.map((item, index) => (
     <Draggable key={item.id} index={index} draggableId={item.id}>
@@ -109,57 +101,23 @@ const StagesList = ({
   }, [state]);
 
   return (
-    <Grid>
-      <Grid.Col span={12}>
-        <Flex direction="row" justify="space-between" align="center">
-          <Text size="sm" weight={600}>
-            Stages of the event
-          </Text>
-          <Button size="xs" compact onClick={() => setdisplayStageForm(true)}>
-            New Stage
-          </Button>
-        </Flex>
-      </Grid.Col>
-      <Grid.Col span={12}>
-        <DragDropContext
-          onDragEnd={({ destination, source }) =>
-            handlers.reorder({
-              from: source.index,
-              to: destination?.index || 0,
-            })
-          }
-        >
-          <Droppable droppableId="dnd-list" direction="vertical">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef}>
-                {items}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </Grid.Col>
-      <Modal
-        opened={displayStageForm}
-        onClose={() => setdisplayStageForm(false)}
-        title={
-          <Text color="blue" size="md" weight={600}>
-            <BsCalendar2Event
-              size={24}
-              style={{ marginBottom: -4, marginRight: 8 }}
-            />{" "}
-            Create a stage for the current event
-          </Text>
-        }
-      >
-        <StageForm
-          handleClose={(data: StageTypes) => {
-            handleAdd(data);
-            setdisplayStageForm(false);
-          }}
-        />
-      </Modal>
-    </Grid>
+    <DragDropContext
+      onDragEnd={({ destination, source }) =>
+        handlers.reorder({
+          from: source.index,
+          to: destination?.index || 0,
+        })
+      }
+    >
+      <Droppable droppableId="dnd-list" direction="vertical">
+        {(provided) => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            {items}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 

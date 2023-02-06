@@ -4,12 +4,14 @@ import {
   Card,
   Container,
   Divider,
+  Drawer,
   Flex,
   Grid,
   Modal,
   Text,
   Title,
   createStyles,
+  useMantineTheme,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import {
@@ -20,6 +22,7 @@ import {
 } from "react-icons/bs";
 import background from "./assets/img/background2.png";
 import ClockDisplay from "./components/ClockDisplay";
+import ConfigureEventDisplay from "./components/ConfigureEventDisplay";
 import EventForm from "./components/EventForm";
 import EventList from "./components/EventList";
 import StageCountDown from "./components/StageCountDown";
@@ -31,12 +34,24 @@ type DataArrayStage = {
   data: StageTypes[];
 };
 
+const defaultEvent = {
+  id: "",
+  title: "",
+  image: "",
+  start_time: "",
+  end_time: "",
+  stages: [],
+  action: {
+    label: "",
+  },
+};
+
 const App: React.FunctionComponent = () => {
   const [data, setdata] = useState<DataArrayStage>({ data: [] });
   const [events, setEvents] = useState<EventTypes[]>([]);
-  const [selectedEvent, setselectedEvent] = useState<EventTypes | null>(null);
+  const [eventData, setEventData] = useState<EventTypes>(defaultEvent);
   const [currentStage, setcurrentStage] = useState<StageTypes | null>(null);
-  const [switching, setswitching] = useState(true);
+  const [switching, setswitching] = useState(false);
 
   const [currentCount, setcurrentCount] = useState<number>(0);
   const [currentCounter, setcurrentCounter] = useState<CountDownTypes>({
@@ -44,6 +59,12 @@ const App: React.FunctionComponent = () => {
     minutes: 0,
     seconds: 0,
   });
+
+  const [displayEventDetails, setdisplayEventDetails] =
+    useState<boolean>(false);
+
+  const drawerTheme = useMantineTheme();
+
   const [displayEventForm, setdisplayEventForm] = useState<boolean>(false);
 
   useEffect(() => {
@@ -169,7 +190,11 @@ const App: React.FunctionComponent = () => {
           <EventList
             allEvents={events}
             handlePlay={(currentEvent: EventTypes) => {
-              setselectedEvent(currentEvent);
+              setEventData(currentEvent);
+            }}
+            handleSelect={async (currentEvent: EventTypes) => {
+              await setEventData(currentEvent);
+              await setdisplayEventDetails(true);
             }}
           />
         </Grid.Col>
@@ -214,6 +239,37 @@ const App: React.FunctionComponent = () => {
             }}
           />
         </Modal>
+        <Drawer
+          overlayColor={
+            drawerTheme.colorScheme === "dark"
+              ? drawerTheme.colors.dark[9]
+              : drawerTheme.colors.gray[2]
+          }
+          overlayOpacity={0.55}
+          overlayBlur={3}
+          position="left"
+          size="lg"
+          padding="sm"
+          opened={displayEventDetails}
+          onClose={() => setdisplayEventDetails(false)}
+          title={
+            <Text color="blue" size="sm" weight={600}>
+              <BsGearFill
+                size={18}
+                style={{ marginBottom: -2, marginRight: 8 }}
+              />{" "}
+              Configure the current event.
+            </Text>
+          }
+        >
+          <ConfigureEventDisplay
+            {...eventData}
+            handleConfig={(selected: EventTypes) => {
+              setdisplayEventForm(false);
+              console.log("Saved changes: ", selected);
+            }}
+          />
+        </Drawer>
       </Grid>
     </div>
   );
